@@ -1,7 +1,17 @@
 {
-	"name": "embed-js",
-	"version": "0.1.0",
-	"devDependencies": {
-		"babel-cli": "^6.0.0"
-	}
+  "name": "embed-js",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "babel src -d lib --ignore embed-index.js"
+  },
+  "main": "src/embed-index.js",
+  "author": "shenlvmeng",
+  "devDependencies": {
+    "babel-core": "^6.13.2",
+    "babel-preset-es2015": "^6.13.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-util": "^3.0.7",
+    "webpack": "^1.13.1"
+  }
 }

@@ -156,7 +156,7 @@ class SubstrateN extends Network {
 
 		for(let k = 0; k < this.nodes; k++){
 			for(let i = 0; i < this.nodes; i++){
-				for(let j = 0; j < this.nodes, j++){
+				for(let j = 0; j < this.nodes; j++){
 					if(weights[i][k]+weights[k][j] < weights[i][j])
 						this.paths[i][j] = path[k][j];
 				}
