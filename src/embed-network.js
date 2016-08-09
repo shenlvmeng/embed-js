@@ -8,9 +8,6 @@ class Node{
 		this.cpu = cpu;
 		this.usage = [];
 	}
-	get cpu(){ return this.cpu; }
-	set cpu(cpu){ this.cpu = cpu; }
-	get usage(){ return this.usage; }
 }
 
 class Link{
@@ -21,11 +18,6 @@ class Link{
 		this.vlan = vlan;
 		this.usage = [];
 	}
-	get bw(){ return this.bw; }
-	get vlan(){ return this.vlan; }
-	set bw(bw){ this.bw = bw; }
-	set vlan(vlan) { this.vlan = vlan; }
-	get usage(){ return this.usage; }
 }
 
 class Network{
@@ -37,13 +29,11 @@ class Network{
 		});
 		this.links.forEach(function(link, i){
 			link.id = i;
-		})
-		this.sum_nodes = this.nodes.length;
-		this.sum_links = this.links.length;
+		});
 	}
 
-	get sum_nodes(){ return this.sum_nodes; }
-	get sum_links(){ return this.sum_links; }
+	get sum_nodes(){ return this.nodes.length; }
+	get sum_links(){ return this.links.length; }
 
 	//generate a network(nodes and links)
 	static mkGraph(sum_n, linkRate, maxCPU, maxBw, maxVlan) {
@@ -81,11 +71,6 @@ class VirtualN extends Network {
 			return prev + curr.bw + 1;
 		});
 	}
-
-	get state(){ return this.state; }
-	get tryCounts() { return this.tryCounts; }
-	get life(){ return this.life; }
-	get revenue(){ return this.revenue; }
 }
 class SubstrateN extends Network {
 	//except: two nodes of the same vn cannot be mapped onto the same substrate node

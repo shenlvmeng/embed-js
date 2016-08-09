@@ -1,0 +1,7 @@
+{
+	"name": "embed-js",
+	"version": "0.1.0",
+	"devDependencies": {
+		"babel-cli": "^6.0.0"
+	}
+}
