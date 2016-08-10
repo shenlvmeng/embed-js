@@ -4,8 +4,8 @@
 	Title: embed-js
 	Hint: Use jquery for DOM manipulating
 */
-import { Network, VirtualN, SubstrateN } from "embed-network.js"
-import { VLAN_MAX, Simulation } from "embed-simulate.js"
+import { Network, VirtualN, SubstrateN } from "./embed-network"
+import { VLAN_MAX, Simulation } from "./embed-simulate"
 
 function embed(vnsPerWin, windows, isinf, linkRate, maxCPU, maxBw, maxLife){
 	//generate substrate network
@@ -26,7 +26,8 @@ function show(counter, sum, ar, rBc) {
 	$("#display_r").val(rBc);
 }
 
-$("#submit").on('click', function(){
+$("#submit").on('click', function(event){
+	event.preventDefault();
 	var vns = $("#vns").val() || 10;
 	var windows = $("#wins").val() || 20;
 	var isinf = $("input[name=isinf]:checked", "#panel").val() || 1;

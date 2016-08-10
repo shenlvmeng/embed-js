@@ -136,8 +136,10 @@ class SubstrateN extends Network {
 		var weights = [];
 		this.paths = [];
 
-		for(let i = 0; i < this.nodes; i++){
-			for(let j = 0; j < this.nodes; j++){
+		for(let i = 0; i < this.sum_nodes; i++){
+			weights.push(new Array(this.sum_nodes));
+			this.paths.push(new Array(this.sum_nodes));
+			for(let j = 0; j < this.sum_nodes; j++){
 				if(i == j){
 					weights[i][j] = 0;
 					this.paths[i][j] = i;

@@ -3,7 +3,7 @@
 	Time: 2016/7
 	Title: embed-js
 */
-import { Network, VirtualN, SubstrateN } from 'embed-network.js'
+import { Network, VirtualN, SubstrateN } from './embed-network'
 
 const VLAN_MAX = 4096;
 const RETRY_TIMES = 2;
