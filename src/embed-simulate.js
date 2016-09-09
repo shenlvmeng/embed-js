@@ -32,12 +32,12 @@ class Simulation {
 			throw new Error("Wrong state("+ vn.state +") of request "+ vn.id +"in ready queue.");
 			return -1;
 		}
-		for(let node in vn.nodes){
+		vn.nodes.forEach((node) => {
 			var maxid = this.sn.getMaxWeightedNode(vn.id);
 			if(maxid < 0 && node.cpu > this.sn.nodes[maxid].cpu){
 				console.log("Node "+ maxid + " CPU is not abundant.\n");
 				console.log("Req "+ vn.id +"in ready queue is failed in node mapping.")
-				vn.nodes.forEach(function(node){
+				vn.nodes.forEach((node) => {
 					if(node.usage.length > 0)
 						this.sn.alterNodeResource(node.usage[0], node.cpu, "add", vn.id);
 				});
@@ -51,7 +51,7 @@ class Simulation {
 			} 
 			node.usage.push(maxid);
 			this.sn.alterNodeResource(maxid, node.cpu, "sub", vn.id);
-		}
+		});
 		vn.state = "NF";
 		return 0;
 	}
@@ -60,14 +60,15 @@ class Simulation {
 		var vn = this.readyQueue[vnid],
 			tmplinks = [],
 			flag = 0,
-			cost = 0;
+			cost = 0,
 			sn_back = this.sn;
 		if(vn.state != "NF"){
 			throw new Error("Wrong state("+ vn.state +") of request "+ vn.id +"in ready queue.");
 			return -1;
 		}
-		for(var link in vn.links){
-			let l_from = vn.nodes[link.src].usage[0],
+		for(let i = 0, len = vn.links.length; i < len; i++){
+			let link = vn.links[i],
+				l_from = vn.nodes[link.src].usage[0],
 				l_to   = vn.nodes[link.dst].usage[0];
 			while(l_from != l_to) {
 				let next = this.sn.paths[l_from][l_to];
@@ -77,7 +78,7 @@ class Simulation {
 					break;
 				}
 				var index = this.sn.links.findIndex(function(l){
-					return l.src == l_from && l.dst == next;
+					return (l.src == l_from && l.dst == next) || (l.src == next && l.dst == l_from);
 				});
 				if(index == -1 || this.sn.links[index].bw < link.bw || this.sn.links[index].vlan < 1) {
 					flag = 1;
@@ -103,7 +104,7 @@ class Simulation {
 							break;
 						}
 						var index = this.sn.links.findIndex(function(l){
-							return l.src == l_from && l.dst == next;
+							return (l.src == l_from && l.dst == next) || (l.src == next && l.dst == l_from);
 						});
 						if(index == -1 || this.sn.links[index].bw < link.bw || this.sn.links[index].vlan < 1) {
 							flag = 1;
@@ -117,16 +118,15 @@ class Simulation {
 			if(flag == 0){
 				cost += link.bw * (tmplinks.length-1);
 				this.sn.alterLinksResource(tmplinks, link.bw, "sub", vn.id);
-				continue;
 			}
 			else if(flag == 2) {
 				//release all resources and change state
 				console.log("Request "+ vn.id +" link mapping failed.")
-				vn.nodes.forEach(function(node){
+				vn.nodes.forEach((node) => {
 					if(node.usage.length == 0) throw new Error("Node resource error in link resource releasing.")
 					this.sn.alterNodeResource(node.usage[0], node.cpu, "add", vn.id);
 				});
-				vn.links.forEach(function(link){
+				vn.links.forEach((link) => {
 					if(link.usage.length > 0)
 						this.sn.alterLinksResource(link.usage, link.bw, "add", vn.id);
 				});
@@ -155,6 +155,7 @@ class Simulation {
 		for(let k = 0; k < win; k++){
 			console.log("Time window No."+ (k+1));
 			//handle requests already embedded in the substrate network
+			//this step is ommited when testing capacity
 			if(!isinf){
 				for(let i = 0; i < this.inQueue.length; i++){
 					if(this.inQueue[i].life <= k){
@@ -162,11 +163,11 @@ class Simulation {
 						let doneReq = this.inQueue[i];
 						if(doneReq.state != "LF") throw new Error("Uncorrect state in inQueue!");
 						console.log("Release resources of request "+ doneReq.id);
-						doneReq.nodesforEach(function(node){
+						doneReq.nodesforEach((node) => {
 							if(node.usage.length == 0) throw new Error("Node resource error in link resource releasing.")
 							this.sn.alterNodeResource(node.usage[0], node.cpu, "add", doneReq.id);
 						});
-						doneReq.links.forEach(function(link){
+						doneReq.links.forEach((link) => {
 							if(link.usage.length > 0)
 								this.sn.alterLinksResource(link.usage, link.bw, "add", doneReq.id);
 						});
@@ -175,7 +176,7 @@ class Simulation {
 				}
 			}
 			//move postponed requests to the ready queue
-			for(let j = 0; j < this.postpQueue.length; j++){
+			while(this.postpQueue.length != 0){
 				let tmpPostReq = this.postpQueue.pop();
 				tmpPostReq.state = "R";
 				this.readyQueue.push(tmpPostReq);

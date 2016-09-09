@@ -35,7 +35,10 @@ class Network{
 	get sum_nodes(){ return this.nodes.length; }
 	get sum_links(){ return this.links.length; }
 
-	//generate a network(nodes and links)
+	/**generate a network(nodes and links)
+	 * avoid unconnected graph
+	 * sum_n should >= 3
+	 */
 	static mkGraph(sum_n, linkRate, maxCPU, maxBw, maxVlan) {
 		var nodes = [];
 		var links = [];
@@ -43,13 +46,22 @@ class Network{
 			let tmpNode = new Node(Math.random()*maxCPU);
 			nodes.push(tmpNode);
 		}
-		for(let i = 0; i < nodes.length; i++){
-			for(let j = i; j < nodes.length; j++){
-				if(i == j) continue;
+		let l = new Link(0, 1, Math.random()*maxBw, maxVlan);
+		links.push(l);
+		for(let i = 2; i < nodes.length; i++){
+			let flag = true;
+			for(let j = 0; j < i; j++){
 				if(Math.random() <= linkRate){
-					let tmpLink = new Link(i, j, Math.random()*maxBw, maxVlan);
-					links.push(tmpLink);
+					let tmpL = new Link(j, i, Math.random()*maxBw, maxVlan);
+					links.push(tmpL);
+					flag = false;
 				}
+			}
+			if(flag){
+				let target = Math.floor(Math.random()*i);
+				if(target == i) target -= 1;
+				let tmpL = new Link(target, i, Math.random()*maxBw, maxVlan);
+				links.push(tmpL);
 			}
 		}
 		var net = {
@@ -67,9 +79,9 @@ class VirtualN extends Network {
 		this.life = life || 1;
 		this.revenue =  this.nodes.reduce(function(prev, curr){
 			return prev + curr.cpu;
-		}) + this.links.reduce(function(prev, curr){
+		}, 0) + this.links.reduce(function(prev, curr){
 			return prev + curr.bw + 1;
-		});
+		}, 0);
 	}
 }
 class SubstrateN extends Network {
@@ -87,7 +99,7 @@ class SubstrateN extends Network {
 			"id" : -1,
 			"value": 0
 		};
-		weights.forEach(function(val, i){
+		weights.forEach((val, i) => {
 			if(val > max.value && this.nodes[i].usage.indexOf(except) == -1){
 				max.id = i;
 				max.value = val;
@@ -114,14 +126,14 @@ class SubstrateN extends Network {
 	alterLinksResource(links, val, type, vnid) {
 		if(type === "add"){
 			console.log("Release bw " + val);
-			links.forEach(function(link){
+			links.forEach((link) => {
 				this.links[link].bw += val;
 				this.links[link].vlan += 1;
 				this.links[link].usage.splice(this.links[link].usage.indexOf(vnid), 1);
 			});
 		} else if (type === "sub"){
-			if(links.every(function(link){ return this.links[link].bw >= val && this.links[link].vlan > 0;})){
-				links.forEach(function(link){
+			if(links.every((link)=>{ return this.links[link].bw >= val && this.links[link].vlan > 0;})){
+				links.forEach((link) => {
 					this.links[link].bw -= val;
 					this.links[link].vlan -= 1;
 					this.links[link].usage.push(vnid);
@@ -142,7 +154,7 @@ class SubstrateN extends Network {
 			for(let j = 0; j < this.sum_nodes; j++){
 				if(i == j){
 					weights[i][j] = 0;
-					this.paths[i][j] = i;
+					this.paths[i][j] = j;
 				} else {
 					weights[i][j] = 10000;
 					this.paths[i][j] = -1;
@@ -150,17 +162,23 @@ class SubstrateN extends Network {
 			}
 		}
 
-		for(let link in this.links){
-			if(link.src < 0 || link.dst < 0) continue;
-			weights[link.src][link.dst] = 1;
-			this.paths[link.src][link.dst] = i;
-		}
+		this.links.forEach((link) => {
+			if(link.src >= 0 && link.dst >= 0){
+				weights[link.src][link.dst] = 1;
+				weights[link.dst][link.src] = 1;
+				this.paths[link.src][link.dst] = link.dst;
+				this.paths[link.dst][link.src] = link.src;
+			}
+		});
 
-		for(let k = 0; k < this.nodes; k++){
-			for(let i = 0; i < this.nodes; i++){
-				for(let j = 0; j < this.nodes; j++){
-					if(weights[i][k]+weights[k][j] < weights[i][j])
-						this.paths[i][j] = path[k][j];
+		for(let k = 0; k < this.sum_nodes; k++){
+			for(let i = 0; i < this.sum_nodes; i++){
+				for(let j = 0; j < this.sum_nodes; j++){
+					if(i == k || j == k || i == j) continue;
+					if(weights[i][k]+weights[k][j] < weights[i][j]){
+						weights[i][j] = weights[i][k]+weights[k][j];
+						this.paths[i][j] = this.paths[i][k];
+					}
 				}
 			}
 		}
