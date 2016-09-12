@@ -70,6 +70,7 @@ class Simulation {
 			let link = vn.links[i],
 				l_from = vn.nodes[link.src].usage[0],
 				l_to   = vn.nodes[link.dst].usage[0];
+				tmplinks = [];
 			while(l_from != l_to) {
 				let next = this.sn.paths[l_from][l_to];
 				//which means 'from' cannot get to 'to'
@@ -117,6 +118,7 @@ class Simulation {
 			}
 			if(flag == 0){
 				cost += link.bw * (tmplinks.length-1);
+				console.log("Alter link resources for VN "+vn.id);
 				this.sn.alterLinksResource(tmplinks, link.bw, "sub", vn.id);
 			}
 			else if(flag == 2) {
@@ -216,7 +218,7 @@ class Simulation {
 		callback(this.counter, this.currSum, this.calcAR(), this.calcRC());
 	}
 	calcRC(){
-		return this.succRec / this.succCos;
+		return this.succRev / this.succCos;
 	}
 	calcAR(){
 		return this.succSum / this.currSum;

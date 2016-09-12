@@ -132,7 +132,10 @@ class SubstrateN extends Network {
 				this.links[link].usage.splice(this.links[link].usage.indexOf(vnid), 1);
 			});
 		} else if (type === "sub"){
-			if(links.every((link)=>{ return this.links[link].bw >= val && this.links[link].vlan > 0;})){
+			if(links.every((link)=>{ 
+				console.log("Link "+link+": rest bw "+this.links[link].bw+" rest vlan "+this.links[link].vlan);
+				return this.links[link].bw >= val && this.links[link].vlan > 0;
+				})){
 				links.forEach((link) => {
 					this.links[link].bw -= val;
 					this.links[link].vlan -= 1;

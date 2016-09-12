@@ -21,15 +21,16 @@ function embed(vnsPerWin, windows, isinf, linkRate, maxCPU, maxBw, maxLife){
 function show(counter, sum, ar, rBc) {
 	if(counter != sum)
 		$("#display").html("可疑的错误。counter != sum");
-	$("#display_s").val(counter);
-	$("#display_a").val(ar);
-	$("#display_r").val(rBc);
+	//console.log("Total sum: "+sum+" AR: "+ar+" R/C: "+rBc);
+	$("#display_s").html(counter);
+	$("#display_a").html(ar);
+	$("#display_r").html(rBc);
 }
 
 $("#submit").on('click', function(event){
 	event.preventDefault();
 	var vns = $("#vns").val() || 10;
-	var windows = $("#wins").val() || 20;
+	var windows = $("#wins").val() || 5;
 	var isinf = $("input[name=isinf]:checked", "#panel").val() || 1;
 	var linkRate = $("#linkrate").val() || .5;
 	var maxCPU = $("#cpu").val() || 1;
