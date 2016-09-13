@@ -32,9 +32,10 @@ class Simulation {
 			throw new Error("Wrong state("+ vn.state +") of request "+ vn.id +"in ready queue.");
 			return -1;
 		}
-		vn.nodes.forEach((node) => {
-			var maxid = this.sn.getMaxWeightedNode(vn.id);
-			if(maxid < 0 && node.cpu > this.sn.nodes[maxid].cpu){
+		for(let i = 0, len = vn.nodes.length; i < len; i++){
+			let node  = vn.nodes[i],
+				maxid = this.sn.getMaxWeightedNode(vn.id, node.cpu);
+			if(maxid < 0 || node.cpu > this.sn.nodes[maxid].cpu){
 				//console.log("Node "+ maxid + " CPU is not abundant.\n");
 				//console.log("Req "+ vn.id +"in ready queue is failed in node mapping.")
 				vn.nodes.forEach((node) => {
@@ -48,10 +49,10 @@ class Simulation {
 				}
 				this.readyQueue.splice(vnid, 1);
 				return -1;
-			} 
+			}
 			node.usage.push(maxid);
 			this.sn.alterNodeResource(maxid, node.cpu, "sub", vn.id);
-		});
+		};
 		vn.state = "NF";
 		return 0;
 	}
@@ -123,7 +124,7 @@ class Simulation {
 			}
 			else if(flag == 2) {
 				//release all resources and change state
-				console.log("Request "+ vn.id +" link mapping failed.")
+				//console.log("Request "+ vn.id +" link mapping failed.")
 				vn.nodes.forEach((node) => {
 					if(node.usage.length == 0) throw new Error("Node resource error in link resource releasing.")
 					this.sn.alterNodeResource(node.usage[0], node.cpu, "add", vn.id);

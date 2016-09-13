@@ -86,7 +86,7 @@ class VirtualN extends Network {
 }
 class SubstrateN extends Network {
 	//except: two nodes of the same vn cannot be mapped onto the same substrate node
-	getMaxWeightedNode(except) {
+	getMaxWeightedNode(except, cpu) {
 		var weights = new Array(this.sum_nodes).fill(0);
 		this.links.forEach(function(link){
 			weights[link.src] += link.bw;
@@ -100,7 +100,7 @@ class SubstrateN extends Network {
 			"value": 0
 		};
 		weights.forEach((val, i) => {
-			if(val > max.value && this.nodes[i].usage.indexOf(except) == -1){
+			if(this.nodes[i].cpu >= cpu && val > max.value && this.nodes[i].usage.indexOf(except) == -1){
 				max.id = i;
 				max.value = val;
 			}
@@ -115,7 +115,10 @@ class SubstrateN extends Network {
 			var tmpid = this.nodes[node].usage.indexOf(vnid);
 			if(tmpid != -1) this.nodes[node].usage.splice(tmpid, 1);
 		} else if(type === "sub"){
-			if(this.nodes[node].cpu < val) throw new Error("Node "+node+" CPU is not enough!");
+			if(this.nodes[node].cpu < val){
+				//console.log(this.nodes[node].cpu+" "+val);
+				throw new Error("Node "+node+" CPU is not enough!");
+			}
 			//console.log("Consume cpu " + val);
 			this.nodes[node].cpu -= val;
 			this.nodes[node].usage.push(vnid);
