@@ -81,6 +81,9 @@
 			font-weight: bolder;
 			margin-right: 40px;
 		}
+		span#display_t{
+			font-style: oblique;
+		}
 		span.notice{
 			font-size: 14px;
 			color: #999;
@@ -98,7 +101,7 @@
 		<label for="vns">Average VNs per time window: </label>
 		<input type="text" name="vns" id="vns" placeholder="10" max="1000" min="0"/>
 		<label for="wins">Total time windows: </label>
-		<input type="text" name="wins" id="wins" placeholder="20" max="1000" min="1" />
+		<input type="text" name="wins" id="wins" placeholder="5" max="1000" min="1" />
 		<br />
 		<label>Choose Mode: </label>
 		<input type="radio" name="isinf" id="f"   value="1" /> <label for="f"  >Capacity Mode</label>
@@ -122,6 +125,8 @@
 		<span class="result">Total number: </span><span id="display_s"></span>
 		<span class="result">Acceptance rate: </span><span id="display_a"></span>
 		<span class="result">R/C: </span><span id="display_r"></span>
+		<br><br>
+		<span class="result">Retries: </span><span id="display_t"></span>
 	</div>
 	<script src="./dist/preload.bundle.js"></script>
 </body>

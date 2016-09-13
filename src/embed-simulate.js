@@ -35,8 +35,8 @@ class Simulation {
 		vn.nodes.forEach((node) => {
 			var maxid = this.sn.getMaxWeightedNode(vn.id);
 			if(maxid < 0 && node.cpu > this.sn.nodes[maxid].cpu){
-				console.log("Node "+ maxid + " CPU is not abundant.\n");
-				console.log("Req "+ vn.id +"in ready queue is failed in node mapping.")
+				//console.log("Node "+ maxid + " CPU is not abundant.\n");
+				//console.log("Req "+ vn.id +"in ready queue is failed in node mapping.")
 				vn.nodes.forEach((node) => {
 					if(node.usage.length > 0)
 						this.sn.alterNodeResource(node.usage[0], node.cpu, "add", vn.id);
@@ -182,6 +182,7 @@ class Simulation {
 				let tmpPostReq = this.postpQueue.pop();
 				tmpPostReq.state = "R";
 				this.readyQueue.push(tmpPostReq);
+				this.failSum -= 1;
 			}
 			//generate random new requests
 			let randomSum = Math.floor(Math.random() * (this.vnsPerWin + 1) + this.vnsPerWin * 1/2);
@@ -221,7 +222,7 @@ class Simulation {
 		return this.succRev / this.succCos;
 	}
 	calcAR(){
-		return this.succSum / this.currSum;
+		return 1 - (this.failSum / this.counter);
 	}
 }
 

@@ -110,13 +110,13 @@ class SubstrateN extends Network {
 
 	alterNodeResource(node, val, type, vnid){
 		if(type === "add"){
-			console.log("Release cpu " + val);
+			//console.log("Release cpu " + val);
 			this.nodes[node].cpu += val;
 			var tmpid = this.nodes[node].usage.indexOf(vnid);
 			if(tmpid != -1) this.nodes[node].usage.splice(tmpid, 1);
 		} else if(type === "sub"){
 			if(this.nodes[node].cpu < val) throw new Error("Node "+node+" CPU is not enough!");
-			console.log("Consume cpu " + val);
+			//console.log("Consume cpu " + val);
 			this.nodes[node].cpu -= val;
 			this.nodes[node].usage.push(vnid);
 		} else
@@ -125,7 +125,7 @@ class SubstrateN extends Network {
 
 	alterLinksResource(links, val, type, vnid) {
 		if(type === "add"){
-			console.log("Release bw " + val);
+			//console.log("Release bw " + val);
 			links.forEach((link) => {
 				this.links[link].bw += val;
 				this.links[link].vlan += 1;
@@ -133,7 +133,7 @@ class SubstrateN extends Network {
 			});
 		} else if (type === "sub"){
 			if(links.every((link)=>{ 
-				console.log("Link "+link+": rest bw "+this.links[link].bw+" rest vlan "+this.links[link].vlan);
+				//console.log("Link "+link+": rest bw "+this.links[link].bw+" rest vlan "+this.links[link].vlan);
 				return this.links[link].bw >= val && this.links[link].vlan > 0;
 				})){
 				links.forEach((link) => {

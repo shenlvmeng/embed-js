@@ -20,7 +20,9 @@ function embed(vnsPerWin, windows, isinf, linkRate, maxCPU, maxBw, maxLife){
 
 function show(counter, sum, ar, rBc) {
 	if(counter != sum)
-		$("#display").html("可疑的错误。counter != sum");
+		$("#display_t").html(sum - counter);
+	else
+		$("#display_t").html("--");
 	//console.log("Total sum: "+sum+" AR: "+ar+" R/C: "+rBc);
 	$("#display_s").html(counter);
 	$("#display_a").html(ar);
@@ -29,12 +31,12 @@ function show(counter, sum, ar, rBc) {
 
 $("#submit").on('click', function(event){
 	event.preventDefault();
-	var vns = $("#vns").val() || 10;
-	var windows = $("#wins").val() || 5;
-	var isinf = $("input[name=isinf]:checked", "#panel").val() || 1;
-	var linkRate = $("#linkrate").val() || .5;
-	var maxCPU = $("#cpu").val() || 1;
-	var maxBw = $("#bw").val() || 1;
-	var maxLife = $("#life").val() || 3;
+	var vns = parseInt($("#vns").val()) || 10;
+	var windows = parseInt($("#wins").val()) || 5;
+	var isinf = parseInt($("input[name=isinf]:checked", "#panel").val()) || 1;
+	var linkRate = parseFloat($("#linkrate").val()) || .5;
+	var maxCPU = parseInt($("#cpu").val()) || 1;
+	var maxBw = parseInt($("#bw").val()) || 1;
+	var maxLife = parseInt($("#life").val()) || 3;
 	embed(vns, windows, isinf, linkRate, maxCPU, maxBw, maxLife);
 })
