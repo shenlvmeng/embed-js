@@ -24,6 +24,8 @@ class Simulation {
 		this.readyQueue = [];
 		this.postpQueue = [];
 		this.inQueue = [];
+		//for temporary deleted links, updated each time window
+		this.indices = [];
 	}
 	//use greedy algorithm
 	mapNode(vnid){
@@ -61,8 +63,7 @@ class Simulation {
 		var vn = this.readyQueue[vnid],
 			tmplinks = [],
 			flag = 0,
-			cost = 0,
-			sn_back = this.sn;
+			cost = 0;
 		if(vn.state != "NF"){
 			throw new Error("Wrong state("+ vn.state +") of request "+ vn.id +"in ready queue.");
 			return -1;
@@ -93,8 +94,9 @@ class Simulation {
 			if(flag == 1){
 				while(flag == 1){
 					tmplinks = [];
+					this.indices.push({index: index, src: this.sn.links[index].src, dst: this.sn.links[index].dst});
 					this.sn.links[index].src = -1;
-					this.sn.links[index].dst = -1;
+					this.sn.links[index].dst = -1;	
 					this.sn.findKShortestPaths();
 					l_from = vn.nodes[link.src].usage[0];
 					flag = 0;		
@@ -142,7 +144,11 @@ class Simulation {
 			}
 
 		}
-		this.sn = sn_back;
+		for (let j = 0; j < this.indices.length; j++) {
+			this.sn.links[this.indices[j].index].src = this.indices[j].src;
+			this.sn.links[this.indices[j].index].dst = this.indices[j].dst;
+		}
+		this.indices = [];
 		if(flag == 0){
 			this.succRev += vn.revenue;
 			this.succCos += cost + vn.revenue;	
