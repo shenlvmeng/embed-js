@@ -49,7 +49,7 @@ class Simulation {
 					this.postpQueue.push(vn);
 					vn.state = "P";
 				}
-				this.readyQueue.splice(vnid, 1);
+				//this.readyQueue.splice(vnid, 1);
 				return -1;
 			}
 			node.usage.push(maxid);
